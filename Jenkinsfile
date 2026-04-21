@@ -4,7 +4,7 @@ pipeline {
     environment {
         AWS_REGION   = 'us-east-1'
         CLUSTER_NAME = 'my-eks-cluster'
-        KUBECONFIG   = '/var/lib/jenkins/.kube/config'
+        KUBECONFIG   = "${HOME}/.kube/config"
     }
 
     stages {
@@ -21,6 +21,7 @@ pipeline {
                     set -e
                     whoami
                     pwd
+                    echo "HOME=$HOME"
                     aws --version
                     kubectl version --client
                     eksctl version
@@ -42,9 +43,11 @@ pipeline {
             steps {
                 sh '''
                     set -e
-                    mkdir -p /var/lib/jenkins/.kube
-                    aws eks update-kubeconfig --region ${AWS_REGION} --name ${CLUSTER_NAME} --kubeconfig ${KUBECONFIG}
-                    chown -R jenkins:jenkins /var/lib/jenkins/.kube
+                    mkdir -p $HOME/.kube
+                    aws eks update-kubeconfig \
+                      --region ${AWS_REGION} \
+                      --name ${CLUSTER_NAME} \
+                      --kubeconfig ${KUBECONFIG}
                 '''
             }
         }
@@ -53,7 +56,7 @@ pipeline {
             steps {
                 sh '''
                     set -e
-                    export KUBECONFIG=/var/lib/jenkins/.kube/config
+                    export KUBECONFIG=${KUBECONFIG}
                     kubectl get nodes
                     kubectl get pods -A
                 '''
