@@ -8,10 +8,8 @@ metadata:
 
 managedNodeGroups:
   - name: managed-ng
-    instanceType: t3.micro
+    instanceType: t3.medium
     desiredCapacity: 2
     minSize: 1
     maxSize: 3
-    volumeSize: 15
-    ssh:
-      allow: true
+    volumeSize: 20
